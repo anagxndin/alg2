@@ -88,6 +88,20 @@ if (numeroClientes < 100) {
 
 void excluirCliente(){
 
+    int cpf;
+    printf("Digite o CPF do cliente que deseja excluir: ");
+    scanf("%d", &cpf);
+    
+    for (int i = 0; i < numeroClientes; i++) {
+        if (clientes[i].cpfCliente == cpf) {
+            // Substitui o cliente a ser excluído pelo último cliente do vetor
+            clientes[i] = clientes[numeroClientes - 1];
+            numeroClientes--; // Reduz o total de clientes
+            printf("Cliente excluído com sucesso!\n");
+            return;
+        }
+    }
+
 }
 
 void consultarCliente(){
@@ -103,7 +117,7 @@ void listagemClientes(){
 }
 
 void funcaoCliente(){
-    //incluir as fun��es de adicionar/excluir/consultar/alterar cliente
+    //incluir as funcoes de adicionar/excluir/consultar/alterar cliente
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -129,9 +143,29 @@ void funcaoCliente(){
     }while(opcao != 0);
 }
 
-void adicionarProduto(){}
+void adicionarProduto(){
+    /*int codigoProduto;
+    int qtdProduto;
+    float precoProduto;
+    char descricaoProduto[200];*/
+}
 
-void excluirProduto(){}
+void excluirProduto(){
+
+    int codigo;
+    printf("Digite o CPF do cliente que deseja excluir: ");
+    scanf("%d", &codigo);
+    
+    for (int i = 0; i < numeroProdutos; i++) {
+        if (produtos[i].codigoProduto == codigo) {
+            produtos[i] = produtos[numeroProdutos - 1];
+            numeroProdutos--;
+            printf("Produto excluído com sucesso!\n");
+            return;
+        }
+    }
+
+}
 
 void consultarProduto(){}
 
@@ -140,7 +174,7 @@ void alterarProduto(){}
 void listagemProdutos(){}
 
 void funcaoProduto(){
-    //incluir as fun��es de adicionar/excluir/consultar/alterar produto
+    //incluir as funcoes de adicionar/excluir/consultar/alterar produto
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -166,9 +200,26 @@ void funcaoProduto(){
     }while(opcao != 0);
 }
 
-void registrarVenda(){}
+void registrarVenda(){
+    /* int cpf;
+    int codigoVenda;
+    int qtdVenda;*/
+}
 
-void alterarVenda(){}
+void alterarVenda(){
+    int codigo;
+    printf("Digite o CPF do cliente que deseja excluir: ");
+    scanf("%d", &codigo);
+    
+    for (int i = 0; i < numeroVendas; i++) {
+        if (vendas[i].codigoVenda == codigo) {
+            vendas[i] = vendas[numeroVendas - 1];
+            numeroVendas--; 
+            printf("Venda excluído com sucesso!\n");
+            return;
+        }
+    }
+}
 
 void consultarVenda(){}
 
