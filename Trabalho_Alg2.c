@@ -49,22 +49,61 @@ typedef struct{
     Data dataCliente;
 }Cliente;
 
+//vetores globais
+Cliente clientes[100];
+int numeroClientes = 0;
+Produto produtos[100];
+int numeroProdutos = 0;
+Venda vendas[100];
+int numeroVendas = 0;
 
-//Funções;
+//Funcoes;
 void menu();
 
-void adicionarCliente(){}
+void adicionarCliente(){
 
-void excluirCliente(){}
+if (numeroClientes < 100) {
+        Cliente novoCliente;
+        printf("Digite o CPF do cliente: ");
+        scanf("%d", &novoCliente.cpfCliente);
+        printf("Digite o nome do cliente: ");
+        scanf("%s", novoCliente.nomeCliente);
+        printf("Digite o telefone do cliente: ");
+        scanf("%d", &novoCliente.telefoneCliente);
+        printf("Digite o nÃºmero da rua: ");
+        scanf("%d", &novoCliente.enderecoCliente.numeroRua);
+        printf("Digite o nome da rua: ");
+        scanf("%s", novoCliente.enderecoCliente.nomeRua);
+        printf("Digite a data de nascimento (dia mes ano): ");
+        scanf("%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
 
-void consultarCliente(){}
+        clientes[numeroClientes++] = novoCliente;
+        printf("Cliente adicionado com sucesso!\n");
+    } else {
+        printf("Capacidade mÃ¡xima de clientes atingida.\n");
+    }
 
-void alterarCliente(){}
 
-void listagemClientes(){}
+}
+
+void excluirCliente(){
+
+}
+
+void consultarCliente(){
+
+}
+
+void alterarCliente(){
+
+}
+
+void listagemClientes(){
+
+}
 
 void funcaoCliente(){
-    //incluir as funções de adicionar/excluir/consultar/alterar cliente
+    //incluir as funï¿½ï¿½es de adicionar/excluir/consultar/alterar cliente
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -101,7 +140,7 @@ void alterarProduto(){}
 void listagemProdutos(){}
 
 void funcaoProduto(){
-    //incluir as funções de adicionar/excluir/consultar/alterar produto
+    //incluir as funï¿½ï¿½es de adicionar/excluir/consultar/alterar produto
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -138,7 +177,7 @@ void excluirVenda(){}
 void listagemVendas(){}
 
 void funcaoVenda(){
-    //incluir as funções de adicionar/excluir/consultar/alterar venda
+    //incluir as funï¿½ï¿½es de adicionar/excluir/consultar/alterar venda
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -200,16 +239,17 @@ void menu(){
             case 0:
                 break;
             default:
-                printf("Opção Inválida!\n");
+                printf("Opcaoo Invalida!\n");
                 break;
         }
     }while(opcao != 0);
 }
 
 
-//Início do Programa(chamada da função 'menu')
+//Inï¿½cio do Programa(chamada da funï¿½ï¿½o 'menu')
 int main(){
     setlocale(LC_ALL,"portuguese");
     menu();
+ 
 }
 
