@@ -65,37 +65,58 @@ fpos_t p0, p1;
 //Funcoes;
 void menu();
 
+void limparBufferEntrada() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 void adicionarCliente(){
 
 if (numeroClientes < 100) {
 
-    arq=fopen("arquivos/clientes.txt","w");
+    arq=fopen("arquivos/clientes.txt","a");
     if(arq==NULL){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
     }
+        Cliente novoCliente;
+        char buffer[100];
 
-    Cliente novoCliente;
-    printf("Digite o CPF do cliente: ");
-    fprintf(arq, "%d", &novoCliente.cpfCliente);
-    printf("Digite o nome do cliente: ");
-    scanf("%s", novoCliente.nomeCliente);
-    printf("Digite o telefone do cliente: ");
-    scanf("%d", &novoCliente.telefoneCliente);
-    printf("Digite o número da rua: ");
-    scanf("%d", &novoCliente.enderecoCliente.numeroRua);
-    printf("Digite o nome da rua: ");
-    scanf("%s", novoCliente.enderecoCliente.nomeRua);
-    printf("Digite a data de nascimento (dia mes ano): ");
-    scanf("%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
+        printf("Digite o CPF do cliente: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &novoCliente.cpfCliente);
+        fprintf(arq, "CPF: %d\n", novoCliente.cpfCliente);
 
-    clientes[numeroClientes++] = novoCliente;
-    printf("Cliente adicionado com sucesso!\n");
+        printf("Digite o nome do cliente: ");
+        fgets(novoCliente.nomeCliente, sizeof(novoCliente.nomeCliente), stdin);
+        novoCliente.nomeCliente[strcspn(novoCliente.nomeCliente, "\n")] = 0; 
+        fprintf(arq, "Nome: %s\n", novoCliente.nomeCliente);
+
+        printf("Digite o telefone do cliente: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &novoCliente.telefoneCliente);
+        fprintf(arq, "Telefone: %d\n", novoCliente.telefoneCliente);
+
+        printf("Digite o numero da rua: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &novoCliente.enderecoCliente.numeroRua);
+        fprintf(arq, "Numero da rua: %d\n", novoCliente.enderecoCliente.numeroRua);
+
+        printf("Digite o nome da rua: ");
+        fgets(novoCliente.enderecoCliente.nomeRua, sizeof(novoCliente.enderecoCliente.nomeRua), stdin);
+        novoCliente.enderecoCliente.nomeRua[strcspn(novoCliente.enderecoCliente.nomeRua, "\n")] = 0; 
+        fprintf(arq, "Nome da rua: %s\n", novoCliente.enderecoCliente.nomeRua);
+
+        printf("Digite a data de nascimento (dia mes ano): ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
+        fprintf(arq, "Data de nascimento: %d/%d/%d\n", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
+        fprintf(arq, "\n");
+
+
     } else {
         printf("Capacidade máxima de clientes atingida.\n");
     }
-    fclose(arq);
-
 }
 
 void excluirCliente(){
@@ -138,6 +159,7 @@ void funcaoCliente(){
         printf("4. Alterar\n");
         printf("0. Voltar para o Menu\n>> ");
         scanf("%d", &opcao);
+        limparBufferEntrada();
         switch(opcao){
             case 1:
                 adicionarCliente();
