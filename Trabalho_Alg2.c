@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//Estruturas
+//Estruturas 
 typedef struct{
     int dia;
     int mes;
@@ -27,7 +27,6 @@ typedef struct{
     char nomeRua[100];
 }Endereco;
 
-//Estruturas Base
 typedef struct{
     int codigoProduto;
     int qtdProduto;
@@ -57,32 +56,45 @@ int numeroProdutos = 0;
 Venda vendas[100];
 int numeroVendas = 0;
 
+//Variaveis Globais
+FILE *arq;
+fpos_t p0, p1;
+
+
+
 //Funcoes;
 void menu();
 
 void adicionarCliente(){
 
 if (numeroClientes < 100) {
-        Cliente novoCliente;
-        printf("Digite o CPF do cliente: ");
-        scanf("%d", &novoCliente.cpfCliente);
-        printf("Digite o nome do cliente: ");
-        scanf("%s", novoCliente.nomeCliente);
-        printf("Digite o telefone do cliente: ");
-        scanf("%d", &novoCliente.telefoneCliente);
-        printf("Digite o número da rua: ");
-        scanf("%d", &novoCliente.enderecoCliente.numeroRua);
-        printf("Digite o nome da rua: ");
-        scanf("%s", novoCliente.enderecoCliente.nomeRua);
-        printf("Digite a data de nascimento (dia mes ano): ");
-        scanf("%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
 
-        clientes[numeroClientes++] = novoCliente;
-        printf("Cliente adicionado com sucesso!\n");
+    arq=fopen("arquivos/clientes.txt","w");
+    if(arq==NULL){
+        printf("Erro ao abrir o arquivo\n");
+        exit(1);
+    }
+
+    Cliente novoCliente;
+    printf("Digite o CPF do cliente: ");
+    fprintf(arq, "%d", &novoCliente.cpfCliente);
+    printf("Digite o nome do cliente: ");
+    scanf("%s", novoCliente.nomeCliente);
+    printf("Digite o telefone do cliente: ");
+    scanf("%d", &novoCliente.telefoneCliente);
+    printf("Digite o número da rua: ");
+    scanf("%d", &novoCliente.enderecoCliente.numeroRua);
+    printf("Digite o nome da rua: ");
+    scanf("%s", novoCliente.enderecoCliente.nomeRua);
+    printf("Digite a data de nascimento (dia mes ano): ");
+    scanf("%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
+
+    clientes[numeroClientes++] = novoCliente;
+    printf("Cliente adicionado com sucesso!\n");
     } else {
         printf("Capacidade máxima de clientes atingida.\n");
     }
-
+    fclose(arq);
 
 }
 
@@ -228,7 +240,7 @@ void excluirVenda(){}
 void listagemVendas(){}
 
 void funcaoVenda(){
-    //incluir as fun��es de adicionar/excluir/consultar/alterar venda
+    //incluir as funcoes de adicionar/excluir/consultar/alterar venda
     int opcao;
     do{
         printf("1. Adicionar\n");
@@ -290,17 +302,17 @@ void menu(){
             case 0:
                 break;
             default:
-                printf("Opcaoo Invalida!\n");
+                printf("Opcao Invalida!\n");
                 break;
         }
     }while(opcao != 0);
 }
 
 
-//In�cio do Programa(chamada da fun��o 'menu')
+//Inicio do Programa(chamada da funcao 'menu')
 int main(){
     setlocale(LC_ALL,"portuguese");
     menu();
- 
+
 }
 
