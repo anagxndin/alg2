@@ -133,7 +133,7 @@ void excluirCliente() {
     char cpf[12];
     printf("Digite o CPF do cliente que deseja excluir: ");
     fgets(cpf, sizeof(cpf), stdin);
-    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
+    cpf[strcspn(cpf, "\n")] = 0; 
 
     arq = fopen("arquivos/clientes.txt", "r+");
     if (arq == NULL) {
@@ -343,8 +343,40 @@ void alterarCliente() {
     }
 }
 
-void listagemClientes(){
+void listagemClientes() {
+    arq = fopen("arquivos/clientes.txt", "r");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    }
 
+    char buffer[256];
+    int clienteEncontrado = 0;
+
+    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
+        if (strncmp(buffer, "CPF: ", 5) == 0) {
+            clienteEncontrado = 1;
+            printf("%s", buffer); // CPF
+            fgets(buffer, sizeof(buffer), arq);
+            printf("%s", buffer); // Nome
+            fgets(buffer, sizeof(buffer), arq);
+            printf("%s", buffer); // Telefone
+            fgets(buffer, sizeof(buffer), arq);
+            printf("%s", buffer); // Numero da casa
+            fgets(buffer, sizeof(buffer), arq);
+            printf("%s", buffer); // Nome da rua
+            fgets(buffer, sizeof(buffer), arq);
+            printf("%s", buffer); // Data de nascimento
+            fgets(buffer, sizeof(buffer), arq); 
+            printf("===============================\n"); 
+        }
+    }
+
+    if (!clienteEncontrado) {
+        printf("Nenhum cliente encontrado.\n");
+    }
+
+    fclose(arq);
 }
 
 void funcaoCliente(){
