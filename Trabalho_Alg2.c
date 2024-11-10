@@ -17,9 +17,9 @@
 
 //Estruturas 
 typedef struct{
-    int dia;
-    int mes;
-    int ano;
+    char dia[3];
+    char mes[3];
+    char ano[5];
 }Data;
 
 typedef struct{
@@ -35,14 +35,14 @@ typedef struct{
 }Produto;
 
 typedef struct{
-    int cpf;
+    char cpf[12];
     int codigoVenda;
     int qtdVenda;
 }Venda;
 
 typedef struct{
-    int cpfCliente;
-    int telefoneCliente;
+    char cpfCliente[12];
+    long int telefoneCliente;
     char nomeCliente[30];
     Endereco enderecoCliente;
     Data dataCliente;
@@ -74,7 +74,7 @@ void adicionarCliente(){
 
 if (numeroClientes < 100) {
 
-    arq=fopen("arquivos/clientes.txt","a");
+    arq=fopen("arquivos/clientes.txt","a+");
     if(arq==NULL){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
@@ -82,11 +82,18 @@ if (numeroClientes < 100) {
         Cliente novoCliente;
         char buffer[100];
 
-        printf("Digite o CPF do cliente: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoCliente.cpfCliente);
-        fprintf(arq, "CPF: %d\n", novoCliente.cpfCliente);
+        do {
+            printf("Digite o CPF do cliente (11 digitos): ");
+            fgets(novoCliente.cpfCliente, sizeof(novoCliente.cpfCliente), stdin);
+            novoCliente.cpfCliente[strcspn(novoCliente.cpfCliente, "\n")] = 0; 
+            if(strlen(novoCliente.cpfCliente) != 11){
+            printf("CPF inválido. Digite novamente.\n");
+            }
+        } while(strlen(novoCliente.cpfCliente) != 11);
+        fprintf(arq, "CPF: %s\n", novoCliente.cpfCliente);
 
+        limparBufferEntrada();
+        
         printf("Digite o nome do cliente: ");
         fgets(novoCliente.nomeCliente, sizeof(novoCliente.nomeCliente), stdin);
         novoCliente.nomeCliente[strcspn(novoCliente.nomeCliente, "\n")] = 0; 
@@ -94,8 +101,8 @@ if (numeroClientes < 100) {
 
         printf("Digite o telefone do cliente: ");
         fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoCliente.telefoneCliente);
-        fprintf(arq, "Telefone: %d\n", novoCliente.telefoneCliente);
+        sscanf(buffer, "%ld", &novoCliente.telefoneCliente);
+        fprintf(arq, "Telefone: %ld\n", novoCliente.telefoneCliente);
 
         printf("Digite o numero da rua: ");
         fgets(buffer, sizeof(buffer), stdin);
@@ -107,12 +114,15 @@ if (numeroClientes < 100) {
         novoCliente.enderecoCliente.nomeRua[strcspn(novoCliente.enderecoCliente.nomeRua, "\n")] = 0; 
         fprintf(arq, "Nome da rua: %s\n", novoCliente.enderecoCliente.nomeRua);
 
-        printf("Digite a data de nascimento (dia mes ano): ");
+        printf("Digite a data de nascimento (DD MM YYYY): ");
         fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d %d %d", &novoCliente.dataCliente.dia, &novoCliente.dataCliente.mes, &novoCliente.dataCliente.ano);
-        fprintf(arq, "Data de nascimento: %d/%d/%d\n", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
+        sscanf(buffer, "%2s %2s %4s", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
+        fprintf(arq, "Data de nascimento: %s/%s/%s\n", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
+        
         fprintf(arq, "\n");
 
+        clientes[numeroClientes++] = novoCliente;
+        printf("Cliente adicionado com sucesso!\n");
 
     } else {
         printf("Capacidade máxima de clientes atingida.\n");
