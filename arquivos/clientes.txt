@@ -1,0 +1,7 @@
+CPF: 12345678911
+Nome: Anastacio
+Telefone: 98680457
+Numero da casa: 32
+Nome da rua: rua meu pau
+Data de nascimento: 09/09/1990
+

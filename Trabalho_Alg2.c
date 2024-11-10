@@ -23,7 +23,7 @@ typedef struct{
 }Data;
 
 typedef struct{
-    int numeroRua;
+    int numeroCasa;
     char nomeRua[100];
 }Endereco;
 
@@ -104,10 +104,10 @@ if (numeroClientes < 100) {
         sscanf(buffer, "%ld", &novoCliente.telefoneCliente);
         fprintf(arq, "Telefone: %ld\n", novoCliente.telefoneCliente);
 
-        printf("Digite o numero da rua: ");
+        printf("Digite o numero da casa: ");
         fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoCliente.enderecoCliente.numeroRua);
-        fprintf(arq, "Numero da rua: %d\n", novoCliente.enderecoCliente.numeroRua);
+        sscanf(buffer, "%d", &novoCliente.enderecoCliente.numeroCasa);
+        fprintf(arq, "Numero da casa: %d\n", novoCliente.enderecoCliente.numeroCasa);
 
         printf("Digite o nome da rua: ");
         fgets(novoCliente.enderecoCliente.nomeRua, sizeof(novoCliente.enderecoCliente.nomeRua), stdin);
@@ -129,26 +129,96 @@ if (numeroClientes < 100) {
     }
 }
 
-void excluirCliente(){
-
-    int cpf;
+void excluirCliente() {
+    char cpf[12];
     printf("Digite o CPF do cliente que deseja excluir: ");
-    scanf("%d", &cpf);
-    
-    for (int i = 0; i < numeroClientes; i++) {
-        if (clientes[i].cpfCliente == cpf) {
-            // Substitui o cliente a ser excluído pelo último cliente do vetor
-            clientes[i] = clientes[numeroClientes - 1];
-            numeroClientes--; // Reduz o total de clientes
-            printf("Cliente excluído com sucesso!\n");
-            return;
+    fgets(cpf, sizeof(cpf), stdin);
+    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
+
+    arq = fopen("arquivos/clientes.txt", "r+");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        exit(1);
+    }
+
+    FILE *temp = fopen("arquivos/temp.txt", "w");
+    if (temp == NULL) {
+        printf("Erro ao abrir o arquivo temporário\n");
+        fclose(arq);
+        exit(1);
+    }
+
+    char buffer[256];
+    int encontrado = 0;
+
+    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
+        if (strncmp(buffer, "CPF: ", 5) == 0) {
+            char cpfArquivo[12];
+            sscanf(buffer + 5, "%s", cpfArquivo);
+            if (strcmp(cpfArquivo, cpf) == 0) {
+                encontrado = 1;
+                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
+                continue;
+            }
+        }
+        fputs(buffer, temp);
+    }
+
+    fclose(arq);
+    fclose(temp);
+
+    if (encontrado) {
+        remove("arquivos/clientes.txt");
+        rename("arquivos/temp.txt", "arquivos/clientes.txt");
+        printf("Cliente excluido com sucesso!\n");
+    } else {
+        remove("arquivos/temp.txt");
+        printf("Cliente nao encontrado.\n");
+    }
+}
+
+void consultarCliente() {
+    char cpf[12];
+    printf("Digite o CPF do cliente que deseja consultar: ");
+    fgets(cpf, sizeof(cpf), stdin);
+    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
+
+    arq = fopen("arquivos/clientes.txt", "r");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    }
+
+    char buffer[256];
+    int encontrado = 0;
+
+    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
+        if (strncmp(buffer, "CPF: ", 5) == 0) {
+            char cpfArquivo[12];
+            sscanf(buffer + 5, "%s", cpfArquivo);
+            if (strcmp(cpfArquivo, cpf) == 0) {
+                encontrado = 1;
+                printf("CPF: %s\n", cpfArquivo);
+                fgets(buffer, sizeof(buffer), arq);
+                printf("%s", buffer); // Nome
+                fgets(buffer, sizeof(buffer), arq);
+                printf("%s", buffer); // Telefone
+                fgets(buffer, sizeof(buffer), arq);
+                printf("%s", buffer); // Numero da casa
+                fgets(buffer, sizeof(buffer), arq);
+                printf("%s", buffer); // Nome da rua
+                fgets(buffer, sizeof(buffer), arq);
+                printf("%s", buffer); // Data de nascimento
+                break;
+            }
         }
     }
 
-}
+    if (!encontrado) {
+        printf("Cliente nao encontrado.\n");
+    }
 
-void consultarCliente(){
-
+    fclose(arq);
 }
 
 void alterarCliente(){
