@@ -221,8 +221,126 @@ void consultarCliente() {
     fclose(arq);
 }
 
-void alterarCliente(){
+void alterarCliente() {
+    char cpf[12];
+    printf("Digite o CPF do cliente que deseja alterar: ");
+    fgets(cpf, sizeof(cpf), stdin);
+    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
 
+    arq = fopen("arquivos/clientes.txt", "r");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    }
+
+    FILE *temp = fopen("arquivos/temp.txt", "w");
+    if (temp == NULL) {
+        printf("Erro ao abrir o arquivo temporario\n");
+        fclose(arq);
+        return;
+    }
+
+    char buffer[256];
+    int encontrado = 0;
+    Cliente cliente;
+
+    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
+        if (strncmp(buffer, "CPF: ", 5) == 0) {
+            char cpfArquivo[12];
+            sscanf(buffer + 5, "%s", cpfArquivo);
+            if (strcmp(cpfArquivo, cpf) == 0) {
+                encontrado = 1;
+                strcpy(cliente.cpfCliente, cpfArquivo);
+                fgets(buffer, sizeof(buffer), arq);
+                sscanf(buffer, "Nome: %[^\n]", cliente.nomeCliente);
+                fgets(buffer, sizeof(buffer), arq);
+                sscanf(buffer, "Telefone: %ld", &cliente.telefoneCliente);
+                fgets(buffer, sizeof(buffer), arq);
+                sscanf(buffer, "Numero da casa: %d", &cliente.enderecoCliente.numeroCasa);
+                fgets(buffer, sizeof(buffer), arq);
+                sscanf(buffer, "Nome da rua: %[^\n]", cliente.enderecoCliente.nomeRua);
+                fgets(buffer, sizeof(buffer), arq);
+                sscanf(buffer, "Data de nascimento: %2s/%2s/%4s", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
+
+                // Exibir informações do cliente
+                printf("CPF: %s\n", cliente.cpfCliente);
+                printf("Nome: %s\n", cliente.nomeCliente);
+                printf("Telefone: %ld\n", cliente.telefoneCliente);
+                printf("Numero da casa: %d\n", cliente.enderecoCliente.numeroCasa);
+                printf("Nome da rua: %s\n", cliente.enderecoCliente.nomeRua);
+                printf("Data de nascimento: %s/%s/%s\n", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
+
+                int opcao;
+                printf("Qual campo deseja alterar?\n");
+                printf("1. Nome\n");
+                printf("2. Telefone\n");
+                printf("3. Numero da casa\n");
+                printf("4. Nome da rua\n");
+                printf("5. Data de nascimento\n");
+                printf("Escolha uma opcao: ");
+                scanf("%d", &opcao);
+                limparBufferEntrada(); 
+
+                switch (opcao) {
+                    case 1:
+                        printf("Digite o novo nome: ");
+                        fgets(cliente.nomeCliente, sizeof(cliente.nomeCliente), stdin);
+                        cliente.nomeCliente[strcspn(cliente.nomeCliente, "\n")] = 0; // Remove o caractere de nova linha
+                        break;
+                    case 2:
+                        printf("Digite o novo telefone: ");
+                        fgets(buffer, sizeof(buffer), stdin);
+                        sscanf(buffer, "%ld", &cliente.telefoneCliente);
+                        break;
+                    case 3:
+                        printf("Digite o novo numero da casa: ");
+                        fgets(buffer, sizeof(buffer), stdin);
+                        sscanf(buffer, "%d", &cliente.enderecoCliente.numeroCasa);
+                        break;
+                    case 4:
+                        printf("Digite o novo nome da rua: ");
+                        fgets(cliente.enderecoCliente.nomeRua, sizeof(cliente.enderecoCliente.nomeRua), stdin);
+                        cliente.enderecoCliente.nomeRua[strcspn(cliente.enderecoCliente.nomeRua, "\n")] = 0; 
+                        break;
+                    case 5:
+                        printf("Digite a nova data de nascimento (DD MM YYYY): ");
+                        fgets(buffer, sizeof(buffer), stdin);
+                        sscanf(buffer, "%2s %2s %4s", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
+                        break;
+                    default:
+                        printf("Opcao invalida.\n");
+                        break;
+                }
+
+               
+                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
+                continue; 
+            }
+        }
+        fputs(buffer, temp);
+    }
+
+    if (encontrado) {
+        fprintf(temp, "CPF: %s\n", cliente.cpfCliente);
+        fprintf(temp, "Nome: %s\n", cliente.nomeCliente);
+        fprintf(temp, "Telefone: %ld\n", cliente.telefoneCliente);
+        fprintf(temp, "Numero da casa: %d\n", cliente.enderecoCliente.numeroCasa);
+        fprintf(temp, "Nome da rua: %s\n", cliente.enderecoCliente.nomeRua);
+        fprintf(temp, "Data de nascimento: %s/%s/%s\n", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
+        fprintf(temp, "\n");
+
+        fclose(arq);
+        fclose(temp);
+
+        remove("arquivos/clientes.txt");
+        rename("arquivos/temp.txt", "arquivos/clientes.txt");
+        printf("Cliente alterado com sucesso!\n");
+    } else {
+        fclose(arq);
+        fclose(temp);
+        remove("arquivos/temp.txt");
+        printf("Cliente não encontrado.\n");
+    }
 }
 
 void listagemClientes(){
