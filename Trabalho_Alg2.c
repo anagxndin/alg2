@@ -14,7 +14,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX = 100;
+#define MAX 100
 
 //Estruturas 
 typedef struct{
@@ -26,6 +26,8 @@ typedef struct{
 typedef struct{
     int numeroCasa;
     char nomeRua[100];
+    char cidade[100];
+    char estado[100];
 }Endereco;
 
 typedef struct{
@@ -244,19 +246,6 @@ void alterarCliente() {
      
 }
 
-void listagemClientes() {
-
-     if (totalClientes == 0) {
-        printf("Nenhum cliente cadastrado.\n");
-        return;
-    }
-
-    printf("Listagem de Clientes:\n");
-    for (int i = 0; i < totalClientes; i++) {
-        printf("%d. CPF: %s, Nome: %s\n", i + 1, clientes[i].cpfCliente, clientes[i].nomeCliente);
-    }
-       
-}
 
 void funcaoCliente(){
     //incluir as funcoes de adicionar/excluir/consultar/alterar cliente
@@ -398,21 +387,6 @@ void alterarProduto(){
         }
     }
     printf("Produto não encontrado.\n");
-
-}
-
-void listagemProdutos(){
-
-    if (totalProdutos == 0) {
-        printf("Nenhum produto cadastrado.\n");
-        return;
-    }
-
-    printf("Listagem de Produtos:\n");
-    for (int i = 0; i < totalProdutos; i++) {
-        printf("%d. Codigo: %s, Preco: %s\n", i + 1, produtos[i].codigoProduto, produtos[i].precoProduto);
-    }
-
 
 }
 
@@ -583,18 +557,6 @@ void excluirVenda(){
 
 }
 
-void listagemVendas() {
-    if (totalVendas == 0) {
-        printf("Nenhuma venda registrada.\n");
-        return;
-    }
-
-    printf("Listagem de Vendas:\n");
-    for (int i = 0; i < totalVendas; i++) {
-        printf("%d. CPF do cliente: %s, Código do produto: %d, Quantidade: %d\n",
-               i + 1, vendas[i].cpf, vendas[i].codigoVenda, vendas[i].qtdVenda);
-    }
-}
 
 void funcaoVenda(){
     //incluir as funcoes de adicionar/excluir/consultar/alterar venda
@@ -623,7 +585,52 @@ void funcaoVenda(){
     }while(opcao != 0);
 }
 
-//RELATORIOS
+//RELATORIOS e LISTAGENS
+
+void listagemVendas() {
+    if (totalVendas == 0) {
+        printf("Nenhuma venda registrada.\n");
+        return;
+    }
+
+    printf("Listagem de Vendas:\n");
+    for (int i = 0; i < totalVendas; i++) {
+        printf("%d. CPF do cliente: %s, Código do produto: %d, Quantidade: %d\n",
+               i + 1, vendas[i].cpf, vendas[i].codigoVenda, vendas[i].qtdVenda);
+    }
+}
+
+void listagemClientes() {
+
+     if (totalClientes == 0) {
+        printf("Nenhum cliente cadastrado.\n");
+        return;
+    }
+
+    printf("Listagem de Clientes:\n");
+    for (int i = 0; i < totalClientes; i++) {
+        printf("%d. CPF: %s, Nome: %s\n", i + 1, clientes[i].cpfCliente, clientes[i].nomeCliente);
+    }
+       
+}
+
+
+void listagemProdutos(){
+
+    if (totalProdutos == 0) {
+        printf("Nenhum produto cadastrado.\n");
+        return;
+    }
+
+    printf("Listagem de Produtos:\n");
+    for (int i = 0; i < totalProdutos; i++) {
+        printf("%d. Codigo: %s, Preco: %s\n", i + 1, produtos[i].codigoProduto, produtos[i].precoProduto);
+    }
+
+
+}
+
+
 void listarProdutosEstoqueBaixo() {
     int limiteEstoque;
     printf("Digite o valor limite de estoque: ");
