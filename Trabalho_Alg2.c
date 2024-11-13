@@ -460,14 +460,70 @@ void adicionarProduto(){
 
 void excluirProduto(){
 
+    int codigo;
+    printf("Digite o código do produto que deseja excluir: ");
+    scanf("%d", &codigo);
+    getchar(); // Para consumir o caractere de nova linha
+
+    FILE *arq = fopen("arquivos/produtos.txt", "r+");
+    if (arq == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        exit(1);
+    }
+
+    FILE *temp = fopen("arquivos/temp.txt", "w");
+    if (temp == NULL) {
+        printf("Erro ao abrir o arquivo temporário\n");
+        fclose(arq);
+        exit(1);
+    }
+
+    char buffer[256];
+    int encontrado = 0;
+
+    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
+        if (strncmp(buffer, "Código: ", 8) == 0) {
+            int codigoArquivo;
+            sscanf(buffer + 8, "%d", &codigoArquivo);
+            if (codigoArquivo == codigo) {
+                encontrado = 1;
+                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
+                continue;
+            }
+        }
+        fputs(buffer, temp);
+    }
+
+    fclose(arq);
+    fclose(temp);
+
+    if (encontrado) {
+        remove("arquivos/produtos.txt");
+        rename("arquivos/temp.txt", "arquivos/produtos.txt");
+        printf("Produto excluído com sucesso!\n");
+    } else {
+        remove("arquivos/temp.txt");
+        printf("Produto não encontrado.\n");
+    }
+
 
 }
 
-void consultarProduto(){}
+void consultarProduto(){
 
-void alterarProduto(){}
 
-void listagemProdutos(){}
+}
+
+void alterarProduto(){
+
+
+}
+
+void listagemProdutos(){
+
+
+
+}
 
 void funcaoProduto(){
     //incluir as funcoes de adicionar/excluir/consultar/alterar produto
@@ -506,11 +562,21 @@ void alterarVenda(){
  
 }
 
-void consultarVenda(){}
+void consultarVenda(){
 
-void excluirVenda(){}
 
-void listagemVendas(){}
+}
+
+void excluirVenda(){
+
+
+}
+
+void listagemVendas(){
+
+
+
+}
 
 void funcaoVenda(){
     //incluir as funcoes de adicionar/excluir/consultar/alterar venda
