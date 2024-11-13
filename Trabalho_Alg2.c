@@ -14,6 +14,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAX = 100;
 
 //Estruturas 
 typedef struct{
@@ -49,17 +50,81 @@ typedef struct{
 }Cliente;
 
 //vetores globais
+
 Cliente clientes[100];
-int numeroClientes = 0;
+int totalClientes = 0;
 Produto produtos[100];
-int numeroProdutos = 0;
+int totalProdutos = 0;
 Venda vendas[100];
-int numeroVendas = 0;
+int totalVendas = 0;
 
-//Variaveis Globais
-FILE *arq;
-fpos_t p0, p1;
+//Arquivos 
+// Funções para manipular arquivos
+void salvarClientes() {
+    FILE *file = fopen("clientes.dat", "wb");
+    if (file == NULL) {
+        printf("Erro ao abrir arquivo de clientes.\n");
+        return;
+    }
+    fwrite(&totalClientes, sizeof(int), 1, file);
+    fwrite(clientes, sizeof(Cliente), totalClientes, file);
+    fclose(file);
+}
 
+void carregarClientes() {
+    FILE *file = fopen("clientes.dat", "rb");
+    if (file == NULL) {
+        printf("Nenhum cliente encontrado. Criando novo arquivo...\n");
+        return;
+    }
+    fread(&totalClientes, sizeof(int), 1, file);
+    fread(clientes, sizeof(Cliente), totalClientes, file);
+    fclose(file);
+}
+
+void salvarProdutos() {
+    FILE *file = fopen("produtos.dat", "wb");
+    if (file == NULL) {
+        printf("Erro ao abrir arquivo de produtos.\n");
+        return;
+    }
+    fwrite(&totalProdutos, sizeof(int), 1, file);
+    fwrite(produtos, sizeof(Produto), totalProdutos, file);
+    fclose(file);
+}
+
+void carregarProdutos() {
+    FILE *file = fopen("produtos.dat", "rb");
+    if (file == NULL) {
+        printf("Nenhum produto encontrado. Criando novo arquivo...\n");
+        return;
+    }
+    fread(&totalProdutos, sizeof(int), 1, file);
+    fread(produtos, sizeof(Produto), totalProdutos, file);
+    fclose(file);
+}
+
+void salvarVendas() {
+    FILE *file = fopen("vendas.dat", "wb");
+    if (file == NULL) {
+        printf("Erro ao abrir arquivo de vendas.\n");
+        return;
+    }
+    fwrite(&totalVendas, sizeof(int), 1, file);
+    fwrite(vendas, sizeof(Venda), totalVendas, file);
+    fclose(file);
+}
+
+void carregarVendas() {
+    FILE *file = fopen("vendas.dat", "rb");
+    if (file == NULL) {
+        printf("Nenhuma venda encontrada. Criando novo arquivo...\n");
+        return;
+    }
+    fread(&totalVendas, sizeof(int), 1, file);
+    fread(vendas, sizeof(Venda), totalVendas, file);
+    fclose(file);
+}
 
 
 //Funcoes;
@@ -71,312 +136,108 @@ void limparBufferEntrada() {
 }
 
 void adicionarCliente(){
-
-if (numeroClientes < 100) {
-
-    arq=fopen("arquivos/clientes.txt","a+");
-    if(arq==NULL){
-        printf("Erro ao abrir o arquivo\n");
-        exit(1);
+ 
+    if (totalClientes >= 100) {
+        printf("Limite de clientes atingido.\n");
+        return;
     }
-        Cliente novoCliente;
-        char buffer[100];
+    
+    Cliente c;
+    printf("CPF: ");
+    scanf("%s", c.cpfCliente);
+    printf("Nome: ");
+    scanf("%s", c.nomeCliente);
+    printf("Telefone: ");
+    scanf("%s", c.telefoneCliente);
+    printf("Endereço: ");
+    scanf("%s", c.enderecoCliente);
+    printf("Data de nascimento (dia mes ano): ");
+    scanf("%d %d %d", &c.dataCliente);
 
-        do {
-            printf("Digite o CPF do cliente (11 digitos): ");
-            fgets(novoCliente.cpfCliente, sizeof(novoCliente.cpfCliente), stdin);
-            novoCliente.cpfCliente[strcspn(novoCliente.cpfCliente, "\n")] = 0; 
-            if(strlen(novoCliente.cpfCliente) != 11){
-            printf("CPF inválido. Digite novamente.\n");
-            }
-        } while(strlen(novoCliente.cpfCliente) != 11);
-        fprintf(arq, "CPF: %s\n", novoCliente.cpfCliente);
+    clientes[totalClientes++] = c;
+    salvarClientes();
+    printf("Cliente cadastrado com sucesso!\n");
 
-        limparBufferEntrada();
-        
-        printf("Digite o nome do cliente: ");
-        fgets(novoCliente.nomeCliente, sizeof(novoCliente.nomeCliente), stdin);
-        novoCliente.nomeCliente[strcspn(novoCliente.nomeCliente, "\n")] = 0; 
-        fprintf(arq, "Nome: %s\n", novoCliente.nomeCliente);
-
-        printf("Digite o telefone do cliente: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%ld", &novoCliente.telefoneCliente);
-        fprintf(arq, "Telefone: %ld\n", novoCliente.telefoneCliente);
-
-        printf("Digite o numero da casa: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoCliente.enderecoCliente.numeroCasa);
-        fprintf(arq, "Numero da casa: %d\n", novoCliente.enderecoCliente.numeroCasa);
-
-        printf("Digite o nome da rua: ");
-        fgets(novoCliente.enderecoCliente.nomeRua, sizeof(novoCliente.enderecoCliente.nomeRua), stdin);
-        novoCliente.enderecoCliente.nomeRua[strcspn(novoCliente.enderecoCliente.nomeRua, "\n")] = 0; 
-        fprintf(arq, "Nome da rua: %s\n", novoCliente.enderecoCliente.nomeRua);
-
-        printf("Digite a data de nascimento (DD MM YYYY): ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%2s %2s %4s", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
-        fprintf(arq, "Data de nascimento: %s/%s/%s\n", novoCliente.dataCliente.dia, novoCliente.dataCliente.mes, novoCliente.dataCliente.ano);
-        
-        fprintf(arq, "\n");
-
-        clientes[numeroClientes++] = novoCliente;
-        printf("Cliente adicionado com sucesso!\n");
-
-    } else {
-        printf("Capacidade máxima de clientes atingida.\n");
-    }
+      
 }
 
 void excluirCliente() {
-    char cpf[12];
+     
+    int cpf;
     printf("Digite o CPF do cliente que deseja excluir: ");
-    fgets(cpf, sizeof(cpf), stdin);
-    cpf[strcspn(cpf, "\n")] = 0; 
-
-    arq = fopen("arquivos/clientes.txt", "r+");
-    if (arq == NULL) {
-        printf("Erro ao abrir o arquivo\n");
-        exit(1);
-    }
-
-    FILE *temp = fopen("arquivos/temp.txt", "w");
-    if (temp == NULL) {
-        printf("Erro ao abrir o arquivo temporário\n");
-        fclose(arq);
-        exit(1);
-    }
-
-    char buffer[256];
-    int encontrado = 0;
-
-    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
-        if (strncmp(buffer, "CPF: ", 5) == 0) {
-            char cpfArquivo[12];
-            sscanf(buffer + 5, "%s", cpfArquivo);
-            if (strcmp(cpfArquivo, cpf) == 0) {
-                encontrado = 1;
-                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
-                continue;
-            }
+    scanf("%d", &cpf);
+    
+    for (int i = 0; i < totalClientes; i++) {
+        if (clientes[i].cpfCliente == cpf) {
+            // Substitui o cliente a ser excluído pelo último cliente do vetor
+            clientes[i] = clientes[totalClientes - 1];
+            totalClientes--; // Reduz o total de clientes
+            printf("Cliente excluído com sucesso!\n");
+            return;
         }
-        fputs(buffer, temp);
     }
+    printf("Cliente não encontrado.\n");
 
-    fclose(arq);
-    fclose(temp);
-
-    if (encontrado) {
-        remove("arquivos/clientes.txt");
-        rename("arquivos/temp.txt", "arquivos/clientes.txt");
-        printf("Cliente excluido com sucesso!\n");
-    } else {
-        remove("arquivos/temp.txt");
-        printf("Cliente nao encontrado.\n");
-    }
 }
 
 void consultarCliente() {
+
     char cpf[12];
     printf("Digite o CPF do cliente que deseja consultar: ");
-    fgets(cpf, sizeof(cpf), stdin);
-    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
+    scanf("%s", cpf);
 
-    arq = fopen("arquivos/clientes.txt", "r");
-    if (arq == NULL) {
-        printf("Erro ao abrir o arquivo\n");
-        return;
-    }
-
-    char buffer[256];
-    int encontrado = 0;
-
-    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
-        if (strncmp(buffer, "CPF: ", 5) == 0) {
-            char cpfArquivo[12];
-            sscanf(buffer + 5, "%s", cpfArquivo);
-            if (strcmp(cpfArquivo, cpf) == 0) {
-                encontrado = 1;
-                printf("CPF: %s\n", cpfArquivo);
-                fgets(buffer, sizeof(buffer), arq);
-                printf("%s", buffer); // Nome
-                fgets(buffer, sizeof(buffer), arq);
-                printf("%s", buffer); // Telefone
-                fgets(buffer, sizeof(buffer), arq);
-                printf("%s", buffer); // Numero da casa
-                fgets(buffer, sizeof(buffer), arq);
-                printf("%s", buffer); // Nome da rua
-                fgets(buffer, sizeof(buffer), arq);
-                printf("%s", buffer); // Data de nascimento
-                break;
-            }
+    for (int i = 0; i < totalClientes; i++) {
+        if (strcmp(clientes[i].cpfCliente, cpf) == 0) {
+            printf("Cliente encontrado!\n");
+            printf("Nome: %s\n", clientes[i].nomeCliente);
+            printf("Telefone: %ld\n", clientes[i].telefoneCliente);
+            printf("Endereço: Rua %s, Número %d\n", clientes[i].enderecoCliente.nomeRua, clientes[i].enderecoCliente.numeroCasa);
+            printf("Data de nascimento: %s/%s/%s\n", clientes[i].dataCliente.dia, clientes[i].dataCliente.mes, clientes[i].dataCliente.ano);
+            return;
         }
     }
-
-    if (!encontrado) {
-        printf("Cliente nao encontrado.\n");
-    }
-
-    fclose(arq);
+    printf("Cliente não encontrado.\n");
+      
 }
 
 void alterarCliente() {
+
     char cpf[12];
     printf("Digite o CPF do cliente que deseja alterar: ");
-    fgets(cpf, sizeof(cpf), stdin);
-    cpf[strcspn(cpf, "\n")] = 0; // Remove o caractere de nova linha
+    scanf("%s", cpf);
 
-    arq = fopen("arquivos/clientes.txt", "r");
-    if (arq == NULL) {
-        printf("Erro ao abrir o arquivo\n");
-        return;
-    }
-
-    FILE *temp = fopen("arquivos/temp.txt", "w");
-    if (temp == NULL) {
-        printf("Erro ao abrir o arquivo temporario\n");
-        fclose(arq);
-        return;
-    }
-
-    char buffer[256];
-    int encontrado = 0;
-    Cliente cliente;
-
-    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
-        if (strncmp(buffer, "CPF: ", 5) == 0) {
-            char cpfArquivo[12];
-            sscanf(buffer + 5, "%s", cpfArquivo);
-            if (strcmp(cpfArquivo, cpf) == 0) {
-                encontrado = 1;
-                strcpy(cliente.cpfCliente, cpfArquivo);
-                fgets(buffer, sizeof(buffer), arq);
-                sscanf(buffer, "Nome: %[^\n]", cliente.nomeCliente);
-                fgets(buffer, sizeof(buffer), arq);
-                sscanf(buffer, "Telefone: %ld", &cliente.telefoneCliente);
-                fgets(buffer, sizeof(buffer), arq);
-                sscanf(buffer, "Numero da casa: %d", &cliente.enderecoCliente.numeroCasa);
-                fgets(buffer, sizeof(buffer), arq);
-                sscanf(buffer, "Nome da rua: %[^\n]", cliente.enderecoCliente.nomeRua);
-                fgets(buffer, sizeof(buffer), arq);
-                sscanf(buffer, "Data de nascimento: %2s/%2s/%4s", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
-
-                // Exibir informações do cliente
-                printf("CPF: %s\n", cliente.cpfCliente);
-                printf("Nome: %s\n", cliente.nomeCliente);
-                printf("Telefone: %ld\n", cliente.telefoneCliente);
-                printf("Numero da casa: %d\n", cliente.enderecoCliente.numeroCasa);
-                printf("Nome da rua: %s\n", cliente.enderecoCliente.nomeRua);
-                printf("Data de nascimento: %s/%s/%s\n", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
-
-                int opcao;
-                printf("Qual campo deseja alterar?\n");
-                printf("1. Nome\n");
-                printf("2. Telefone\n");
-                printf("3. Numero da casa\n");
-                printf("4. Nome da rua\n");
-                printf("5. Data de nascimento\n");
-                printf("Escolha uma opcao: ");
-                scanf("%d", &opcao);
-                limparBufferEntrada(); 
-
-                switch (opcao) {
-                    case 1:
-                        printf("Digite o novo nome: ");
-                        fgets(cliente.nomeCliente, sizeof(cliente.nomeCliente), stdin);
-                        cliente.nomeCliente[strcspn(cliente.nomeCliente, "\n")] = 0; // Remove o caractere de nova linha
-                        break;
-                    case 2:
-                        printf("Digite o novo telefone: ");
-                        fgets(buffer, sizeof(buffer), stdin);
-                        sscanf(buffer, "%ld", &cliente.telefoneCliente);
-                        break;
-                    case 3:
-                        printf("Digite o novo numero da casa: ");
-                        fgets(buffer, sizeof(buffer), stdin);
-                        sscanf(buffer, "%d", &cliente.enderecoCliente.numeroCasa);
-                        break;
-                    case 4:
-                        printf("Digite o novo nome da rua: ");
-                        fgets(cliente.enderecoCliente.nomeRua, sizeof(cliente.enderecoCliente.nomeRua), stdin);
-                        cliente.enderecoCliente.nomeRua[strcspn(cliente.enderecoCliente.nomeRua, "\n")] = 0; 
-                        break;
-                    case 5:
-                        printf("Digite a nova data de nascimento (DD MM YYYY): ");
-                        fgets(buffer, sizeof(buffer), stdin);
-                        sscanf(buffer, "%2s %2s %4s", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
-                        break;
-                    default:
-                        printf("Opcao invalida.\n");
-                        break;
-                }
-
-               
-                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
-                continue; 
-            }
+    for (int i = 0; i < totalClientes; i++) {
+        if (strcmp(clientes[i].cpfCliente, cpf) == 0) {
+            printf("Cliente encontrado, atualize os dados:\n");
+            printf("Nome: ");
+            scanf("%s", clientes[i].nomeCliente);
+            printf("Telefone: ");
+            scanf("%ld", &clientes[i].telefoneCliente);
+            printf("Endereço (Rua, Número): ");
+            scanf("%s %d", clientes[i].enderecoCliente.nomeRua, &clientes[i].enderecoCliente.numeroCasa);
+            printf("Data de nascimento (dia, mês, ano): ");
+            scanf("%s %s %s", clientes[i].dataCliente.dia, clientes[i].dataCliente.mes, clientes[i].dataCliente.ano);
+            salvarClientes();
+            printf("Cliente alterado com sucesso!\n");
+            return;
         }
-        fputs(buffer, temp);
     }
-
-    if (encontrado) {
-        fprintf(temp, "CPF: %s\n", cliente.cpfCliente);
-        fprintf(temp, "Nome: %s\n", cliente.nomeCliente);
-        fprintf(temp, "Telefone: %ld\n", cliente.telefoneCliente);
-        fprintf(temp, "Numero da casa: %d\n", cliente.enderecoCliente.numeroCasa);
-        fprintf(temp, "Nome da rua: %s\n", cliente.enderecoCliente.nomeRua);
-        fprintf(temp, "Data de nascimento: %s/%s/%s\n", cliente.dataCliente.dia, cliente.dataCliente.mes, cliente.dataCliente.ano);
-        fprintf(temp, "\n");
-
-        fclose(arq);
-        fclose(temp);
-
-        remove("arquivos/clientes.txt");
-        rename("arquivos/temp.txt", "arquivos/clientes.txt");
-        printf("Cliente alterado com sucesso!\n");
-    } else {
-        fclose(arq);
-        fclose(temp);
-        remove("arquivos/temp.txt");
-        printf("Cliente não encontrado.\n");
-    }
+    printf("Cliente não encontrado.\n");
+     
 }
 
 void listagemClientes() {
-    arq = fopen("arquivos/clientes.txt", "r");
-    if (arq == NULL) {
-        printf("Erro ao abrir o arquivo\n");
+
+     if (totalClientes == 0) {
+        printf("Nenhum cliente cadastrado.\n");
         return;
     }
 
-    char buffer[256];
-    int clienteEncontrado = 0;
-
-    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
-        if (strncmp(buffer, "CPF: ", 5) == 0) {
-            clienteEncontrado = 1;
-            printf("%s", buffer); // CPF
-            fgets(buffer, sizeof(buffer), arq);
-            printf("%s", buffer); // Nome
-            fgets(buffer, sizeof(buffer), arq);
-            printf("%s", buffer); // Telefone
-            fgets(buffer, sizeof(buffer), arq);
-            printf("%s", buffer); // Numero da casa
-            fgets(buffer, sizeof(buffer), arq);
-            printf("%s", buffer); // Nome da rua
-            fgets(buffer, sizeof(buffer), arq);
-            printf("%s", buffer); // Data de nascimento
-            fgets(buffer, sizeof(buffer), arq); 
-            printf("===============================\n"); 
-        }
+    printf("Listagem de Clientes:\n");
+    for (int i = 0; i < totalClientes; i++) {
+        printf("%d. CPF: %s, Nome: %s\n", i + 1, clientes[i].cpfCliente, clientes[i].nomeCliente);
     }
-
-    if (!clienteEncontrado) {
-        printf("Nenhum cliente encontrado.\n");
-    }
-
-    fclose(arq);
+       
 }
 
 void funcaoCliente(){
@@ -413,114 +274,92 @@ void adicionarProduto(){
     float precoProduto;
     char descricaoProduto[200];*/
 
-    FILE *arq;
-
-    if (numeroProdutos < 100) {
-        arq = fopen("arquivos/produtos.txt", "a+");
-        if (arq == NULL) {
-            printf("Erro ao abrir o arquivo\n");
-            exit(1);
-        }
-
-        Produto novoProduto;
-        char buffer[100];
-
-        printf("Digite o código do produto (número inteiro): ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoProduto.codigoProduto);
-        fprintf(arq, "Código: %d\n", novoProduto.codigoProduto);
-
-        printf("Digite a descrição do produto: ");
-        fgets(novoProduto.descricaoProduto, sizeof(novoProduto.descricaoProduto), stdin);
-        novoProduto.descricaoProduto[strcspn(novoProduto.descricaoProduto, "\n")] = 0;
-        fprintf(arq, "Descrição: %s\n", novoProduto.descricaoProduto);
-
-        printf("Digite o preço do produto: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%f", &novoProduto.precoProduto);
-        fprintf(arq, "Preço: %.2f\n", novoProduto.precoProduto);
-
-        printf("Digite a quantidade em estoque: ");
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &novoProduto.qtdProduto);
-        fprintf(arq, "Quantidade em estoque: %d\n", novoProduto.qtdProduto);
-
-        fprintf(arq, "\n");
-
-        produtos[numeroProdutos++] = novoProduto;
-        printf("Produto adicionado com sucesso!\n");
-
-        fclose(arq);
-
-    } else {
-        printf("Capacidade máxima de produtos atingida.\n");
+    if (totalProdutos >= 100) {
+        printf("Limite de clientes atingido.\n");
+        return;
     }
+    
+    Produto p;
+    printf("CODIGO: ");
+    scanf("%d", p.codigoProduto);
+    printf("PRECO: ");
+    scanf("%f",  p.precoProduto);
+    printf("QUANTIDADE: ");
+    scanf("%d", p.qtdProduto);
+    printf("DESCRICAO: ");
+    scanf("%s", p.descricaoProduto);
+   
 
-}
-
-void excluirProduto(){
-
-    int codigo;
-    printf("Digite o código do produto que deseja excluir: ");
-    scanf("%d", &codigo);
-    getchar(); // Para consumir o caractere de nova linha
-
-    FILE *arq = fopen("arquivos/produtos.txt", "r+");
-    if (arq == NULL) {
-        printf("Erro ao abrir o arquivo\n");
-        exit(1);
-    }
-
-    FILE *temp = fopen("arquivos/temp.txt", "w");
-    if (temp == NULL) {
-        printf("Erro ao abrir o arquivo temporário\n");
-        fclose(arq);
-        exit(1);
-    }
-
-    char buffer[256];
-    int encontrado = 0;
-
-    while (fgets(buffer, sizeof(buffer), arq) != NULL) {
-        if (strncmp(buffer, "Código: ", 8) == 0) {
-            int codigoArquivo;
-            sscanf(buffer + 8, "%d", &codigoArquivo);
-            if (codigoArquivo == codigo) {
-                encontrado = 1;
-                while (fgets(buffer, sizeof(buffer), arq) != NULL && strcmp(buffer, "\n") != 0);
-                continue;
-            }
-        }
-        fputs(buffer, temp);
-    }
-
-    fclose(arq);
-    fclose(temp);
-
-    if (encontrado) {
-        remove("arquivos/produtos.txt");
-        rename("arquivos/temp.txt", "arquivos/produtos.txt");
-        printf("Produto excluído com sucesso!\n");
-    } else {
-        remove("arquivos/temp.txt");
-        printf("Produto não encontrado.\n");
-    }
-
+    produtos[totalProdutos++] = p;
+    salvarProdutos();
+    printf("Produto cadastrado com sucesso!\n");
+ 
 
 }
 
 void consultarProduto(){
 
+    int codigo;
+    printf("Digite o código do produto que deseja consultar: ");
+    scanf("%d", &codigo);
+    getchar(); 
+
+    int encontrado = 0;
+
+    for (int i = 0; i < totalClientes; i++) {
+        if (produtos[i].codigoProduto == codigo) {
+            encontrado = 1;
+            printf("Produto encontrado!\n");
+            printf("Código: %d\n", produtos[i].codigoProduto);
+            printf("Quantidade: %d\n", produtos[i].qtdProduto);
+            printf("Preço: %.2f\n", produtos[i].precoProduto);
+            printf("Descrição: %s\n", produtos[i].descricaoProduto);
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Produto não encontrado.\n");
+    }
 
 }
 
 void alterarProduto(){
 
+    int codigo;
+    printf("Digite o código do Produto que deseja alterar: ");
+    scanf("%s", codigo);
+
+    for (int i = 0; i < totalProdutos; i++) {
+        if (strcmp(produtos[i].codigoProduto, codigo) == 0) {
+            printf("Produto encontrado, atualize os dados:\n");
+            printf("CODIGO: ");
+            scanf("%d", produtos[i].codigoProduto);
+            printf("PRECO: ");
+            scanf("%f",  produtos[i].precoProduto);
+            printf("QUANTIDADE: ");
+            scanf("%d", produtos[i].qtdProduto);
+            printf("DESCRICAO: ");
+            scanf("%s", produtos[i].descricaoProduto);
+            printf("Cliente alterado com sucesso!\n");
+            return;
+        }
+    }
+    printf("Cliente não encontrado.\n");
 
 }
 
 void listagemProdutos(){
 
+    if (totalProdutos == 0) {
+        printf("Nenhum produto cadastrado.\n");
+        return;
+    }
+
+    printf("Listagem de Produtos:\n");
+    for (int i = 0; i < totalProdutos; i++) {
+        printf("%d. Codigo: %s, Preco: %s\n", i + 1, produtos[i].codigoProduto, produtos[i].precoProduto);
+    }
 
 
 }
