@@ -652,6 +652,7 @@ void listarProdutosEstoqueBaixo() {
     scanf("%d", &limiteEstoque);
 
     printf("Produtos com estoque abaixo de %d:\n", limiteEstoque);
+
     for (int i = 0; i < totalProdutos; i++) {
         if (produtos[i].qtdProduto < limiteEstoque) {
             printf("Código: %d, Descrição: %s, Estoque: %d\n",
@@ -666,10 +667,24 @@ void listarClientesAcimaDeValor() {
     scanf("%f", &valorLimite);
 
     printf("Clientes que compraram acima de %.2f:\n", valorLimite);
-    for (int i = 0; i < totalVendas; i++) {
-        float valorTotal = vendas[i].qtdVenda * produtos[vendas[i].codigoVenda].precoProduto;
-        if (valorTotal > valorLimite) {
-            printf("CPF do Cliente: %s, Valor Total Da Venda: %.2f\n", vendas[i].cpf, valorTotal);
+
+    for (int i = 0; i < totalClientes; i++) {
+        float totalGastoCliente = 0;
+
+        for (int j = 0; j < totalVendas; j++) {
+            if (strcmp(clientes[i].cpfCliente, vendas[j].cpf) == 0) {
+                for (int k = 0; k < totalProdutos; k++) {
+                    if (produtos[k].codigoProduto == vendas[j].codigoVenda) {
+                        totalGastoCliente += vendas[j].qtdVenda * produtos[k].precoProduto;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (totalGastoCliente > valorLimite) {
+            printf("CPF: %s, Nome: %s, Total Gasto: %.2f\n",
+                   clientes[i].cpfCliente, clientes[i].nomeCliente, totalGastoCliente);
         }
     }
 }
