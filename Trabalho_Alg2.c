@@ -412,22 +412,54 @@ void adicionarProduto(){
     int qtdProduto;
     float precoProduto;
     char descricaoProduto[200];*/
+
+    FILE *arq;
+
+    if (numeroProdutos < 100) {
+        arq = fopen("arquivos/produtos.txt", "a+");
+        if (arq == NULL) {
+            printf("Erro ao abrir o arquivo\n");
+            exit(1);
+        }
+
+        Produto novoProduto;
+        char buffer[100];
+
+        printf("Digite o código do produto (número inteiro): ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &novoProduto.codigoProduto);
+        fprintf(arq, "Código: %d\n", novoProduto.codigoProduto);
+
+        printf("Digite a descrição do produto: ");
+        fgets(novoProduto.descricaoProduto, sizeof(novoProduto.descricaoProduto), stdin);
+        novoProduto.descricaoProduto[strcspn(novoProduto.descricaoProduto, "\n")] = 0;
+        fprintf(arq, "Descrição: %s\n", novoProduto.descricaoProduto);
+
+        printf("Digite o preço do produto: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%f", &novoProduto.precoProduto);
+        fprintf(arq, "Preço: %.2f\n", novoProduto.precoProduto);
+
+        printf("Digite a quantidade em estoque: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &novoProduto.qtdProduto);
+        fprintf(arq, "Quantidade em estoque: %d\n", novoProduto.qtdProduto);
+
+        fprintf(arq, "\n");
+
+        produtos[numeroProdutos++] = novoProduto;
+        printf("Produto adicionado com sucesso!\n");
+
+        fclose(arq);
+
+    } else {
+        printf("Capacidade máxima de produtos atingida.\n");
+    }
+
 }
 
 void excluirProduto(){
 
-    int codigo;
-    printf("Digite o CPF do cliente que deseja excluir: ");
-    scanf("%d", &codigo);
-    
-    for (int i = 0; i < numeroProdutos; i++) {
-        if (produtos[i].codigoProduto == codigo) {
-            produtos[i] = produtos[numeroProdutos - 1];
-            numeroProdutos--;
-            printf("Produto excluído com sucesso!\n");
-            return;
-        }
-    }
 
 }
 
@@ -471,18 +503,7 @@ void registrarVenda(){
 }
 
 void alterarVenda(){
-    int codigo;
-    printf("Digite o CPF do cliente que deseja excluir: ");
-    scanf("%d", &codigo);
-    
-    for (int i = 0; i < numeroVendas; i++) {
-        if (vendas[i].codigoVenda == codigo) {
-            vendas[i] = vendas[numeroVendas - 1];
-            numeroVendas--; 
-            printf("Venda excluído com sucesso!\n");
-            return;
-        }
-    }
+ 
 }
 
 void consultarVenda(){}
