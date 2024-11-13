@@ -137,6 +137,26 @@ void limparBufferEntrada() {
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
+//VALIDACOES E CONDICOES
+int codigoProdutoJaCadastrado(int codigo) {
+    for (int i = 0; i < totalProdutos; i++) {
+        if (produtos[i].codigoProduto == codigo) {
+            return 1; 
+        }
+    }
+    return 0; 
+}
+
+int cpfJaCadastrado(const char *cpf) {
+    for (int i = 0; i < totalClientes; i++) {
+        if (strcmp(clientes[i].cpfCliente, cpf) == 0) {
+            return 1; // CPF já existe
+        }
+    }
+    return 0; // CPF não encontrado
+}
+
+
 void adicionarCliente(){
  
     if (totalClientes >= 100) {
@@ -148,11 +168,9 @@ void adicionarCliente(){
     printf("CPF: ");
     scanf("%s", c.cpfCliente);
 
-    for (int i = 0; i < totalClientes; i++) {
-        if (strcmp(clientes[i].cpfCliente, c.cpfCliente) == 0) {
-            printf("Cliente com este CPF já está cadastrado.\n");
-            return;
-        }
+    if (cpfJaCadastrado(c.cpfCliente)) {
+        printf("Produto com este código já está cadastrado.\n");
+        return;
     }
 
     printf("Nome: ");
@@ -290,12 +308,9 @@ void adicionarProduto(){
     printf("Código do Produto: ");
     scanf("%d", &p.codigoProduto);
 
-    // Verificar se o código do produto já está cadastrado
-    for (int i = 0; i < totalProdutos; i++) {
-        if (produtos[i].codigoProduto == p.codigoProduto) {
-            printf("Produto com este código já está cadastrado.\n");
-            return;
-        }
+    if (codigoProdutoJaCadastrado(p.codigoProduto)) {
+        printf("Produto com este código já está cadastrado.\n");
+        return;
     }
 
     printf("Descrição: ");
