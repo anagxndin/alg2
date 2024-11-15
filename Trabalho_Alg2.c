@@ -14,6 +14,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #define MAX 100
 
 //Estruturas
@@ -39,7 +40,8 @@ typedef struct{
 
 typedef struct{
     char cpf[12];
-    int codigoVenda; //codigoDoProduto;
+    int codigoVenda;
+    int codProdutoVenda;
     int qtdVenda;
 }Venda;
 
@@ -443,12 +445,14 @@ void funcaoProduto(){
 }
 
 void registrarVenda(){
-    /*int cpf;
-    int codigoVenda;
-    int qtdVenda;*/
+   
     /*Se o produto estiver com a quantidade em estoque menor que a quantidade a ser vendida,
     a venda nao podera ser efetivada;
     O cliente so podera comprar um produto, se o mesmo ja estiver cadastrado;*/
+
+    carregarClientes();
+    carregarProdutos();
+    carregarVendas();
 
     if (totalVendas >= 100) {
         printf("Limite de vendas atingido.\n");
@@ -459,6 +463,7 @@ void registrarVenda(){
     char cpf[12];
     int codigoProduto;
     int qtdVenda;
+    int codVenda;
 
     // verificacao cliente
     printf("Digite o CPF do cliente: ");
@@ -495,11 +500,12 @@ void registrarVenda(){
     printf("Digite a quantidade de produtos para a compra: ");
     scanf("%d", &qtdVenda);
     if (produtos[produtoEncontrado].qtdProduto < qtdVenda) {
-        printf("Estoque insuficiente. Quantidade disponível: %d\n", produtos[produtoEncontrado].qtdProduto);
+        printf("Estoque insuficiente. Quantidade disponivel: %d\n", produtos[produtoEncontrado].qtdProduto);
         return;
     }
 
-    v.codigoVenda = codigoProduto;
+    v.codProdutoVenda = codigoProduto;
+    v.codigoVenda = rand() % 1000;
     v.qtdVenda = qtdVenda;
     vendas[totalVendas++] = v;
     produtos[produtoEncontrado].qtdProduto -= qtdVenda;
@@ -507,10 +513,13 @@ void registrarVenda(){
     salvarVendas();
     salvarProdutos();
     printf("Venda efetuada com sucesso!\n");
+    printf("Codigo da Venda: %d\n", v.codigoVenda);
 
 }
 
 void alterarVenda(){
+
+    carregarVendas();
 
     int codigoVenda;
     printf("Digite o Codigo da venda que deseja alterar: ");
@@ -530,10 +539,21 @@ void alterarVenda(){
 
     Venda *v = &vendas[vendaEncontrada];
     printf("Venda encontrada! Atualize os dados:\n");
+    for(int i = 0; i < totalVendas; i++){
+        if(vendas[i].codigoVenda == codigoVenda){
+            scanf("CPF:: %s\n", &vendas[i].cpf);
+            scanf("Codigo do produto: %d\n", &vendas[i].codProdutoVenda);
+            scanf("Quantidade: %d\n", &vendas[i].qtdVenda);
+            salvarVendas();
+            printf("Venda alterada com sucesso!\n");
+        }
+    } 
 
 }
 
 void consultarVenda(){
+
+    carregarVendas();
 
     int codigoVenda;
     printf("Digite o Codigo da venda que deseja consultar: ");
@@ -543,7 +563,7 @@ void consultarVenda(){
         if (vendas[i].codigoVenda == codigoVenda) {
             printf("Venda encontrada!\n");
             printf("CPF do cliente: %s\n", vendas[i].cpf);
-            printf("Codigo do produto: %d\n", vendas[i].codigoVenda);
+            printf("Codigo do produto: %d\n", vendas[i].codProdutoVenda);
             printf("Quantidade vendida: %d\n", vendas[i].qtdVenda);
             return;
         }
@@ -554,31 +574,33 @@ void consultarVenda(){
 
 void excluirVenda(){
 
+    carregarVendas();
+    carregarProdutos();
+
     int codigoVenda;
     printf("Digite o Codigo da venda que deseja excluir: ");
     scanf("%d", &codigoVenda);
 
     for (int i = 0; i < totalVendas; i++) {
-        if (vendas[i].codigoVenda == codigoVenda) {
+        if (vendas[i].codigoVenda == codigoVenda) { 
             // Devolver a quantidade de produto ao estoque antes de excluir
             for (int j = 0; j < totalProdutos; j++) {
-                if (produtos[j].codigoProduto == vendas[i].codigoVenda) {
+                if (produtos[j].codigoProduto == vendas[i].codProdutoVenda) {
                     produtos[j].qtdProduto += vendas[i].qtdVenda;
                     break;
                 }
             }
 
-            // Substituir a venda excluída pela última venda do vetor
+            // Substituir a venda excluida pela última venda do vetor
             vendas[i] = vendas[totalVendas - 1];
             totalVendas--;
             salvarVendas();
             salvarProdutos();
-            printf("Venda excluída com sucesso!\n");
+            printf("Venda excluida com sucesso!\n");
             return;
         }
     }
     printf("Venda nao encontrada.\n");
-
 
 }
 
@@ -623,8 +645,8 @@ void listagemVendas() {
 
     printf("Listagem de Vendas:\n");
     for (int i = 0; i < totalVendas; i++) {
-        printf("%d. CPF do cliente: %s, Codigo do produto: %d, Quantidade: %d\n",
-               i + 1, vendas[i].cpf, vendas[i].codigoVenda, vendas[i].qtdVenda);
+        printf("%d. CPF do cliente: %s, Codigo do produto: %d, Quantidade: %d\n, Codigo da Venda: %d\n",
+               i + 1, vendas[i].cpf, vendas[i].codProdutoVenda, vendas[i].qtdVenda, vendas[i].codigoVenda);
     }
 }
 
@@ -758,6 +780,7 @@ void menu(){
 //Inicio do Programa(chamada da funcao 'menu')
 int main(){
     setlocale(LC_ALL,"portuguese");
+    srand(time(NULL));
     menu();
 
 }
